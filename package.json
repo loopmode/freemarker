@@ -1,5 +1,5 @@
 {
-  "name": "freemarker",
+  "name": "@loopmode/freemarker",
   "version": "2.0.0",
   "description": "Freemarker integration for NodeJS.",
   "main": "dist/app.js",
@@ -15,17 +15,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kaola-fed/freemarker.git"
+    "url": "git+https://github.com/loopmode/freemarker.git"
   },
   "keywords": [
     "Freemarker"
   ],
   "author": "Cody Chan <int64ago@gmail.com> (https://int64ago.org)",
+  "contributors": ["Jovica Aleksic <jovica.aleksic@loopmode.de> (https://github.com/loopmode)"],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/kaola-fed/freemarker/issues"
+    "url": "https://github.com/loopmode/freemarker/issues"
   },
-  "homepage": "https://github.com/kaola-fed/freemarker#readme",
+  "homepage": "https://github.com/loopmode/freemarker#readme",
   "devDependencies": {
     "babel-cli": "^6.16.0",
     "babel-plugin-transform-runtime": "^6.15.0",

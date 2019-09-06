@@ -16,6 +16,21 @@ class Freemarker {
       `fmpp/bin/fmpp${os.platform() === 'win32' ? '.bat' : ''}`);
   }
 
+  get includes() {
+    return  {
+      patchSource(str) {
+        return str.replace(/<#include "/g, `<#include "/@includes/`)
+      },
+      patchConfig(config, includesFolder) {
+        return  Object.assign(config, {
+          freemarkerLinks: `{
+            includes: ${includesFolder.replace(/\\/g, "/")}
+          }`
+        })
+      }
+    };
+  } 
+
   _randomFile() {
     return path.join(this.tmpDir, crypto.randomBytes(20).toString('hex'));
   }
@@ -48,20 +63,21 @@ class Freemarker {
     return _file;
   }
 
-  render(str, data, callback) {
+  render(str, data, callback, options) {
+    if (options && options.includesFolder) str = this.includes.patchSource(str);
     const ftlFile = this._randomFile() + this.suffix;
     this._writeFTL(ftlFile, str);
     this.renderFile(ftlFile, data, (err, result) => {
       callback(err, result);
       this._cleanFiles([ftlFile]);
-    });
+    }, options);
   }
 
-  async renderFile(file, data = {}, callback = () => {}) {
+  async renderFile(file, data = {}, callback = () => {}, options) {
     const _file = this._getRealPath(file);
 
     if (Object.entries(data).length === 0) {
-      return this.renderProxy(_file, {}, callback);
+      return this.renderProxy(_file, {}, callback, options);
     }
 
     let {tempPath, cleanFile, error, lines} = await assignJson.createTmp(_file, data, this.tagSyntax);
@@ -73,16 +89,15 @@ class Freemarker {
         return `line ${Number(line) - lines},`;
       }): error, result);
       cleanFile();
-    });
+    }, options);
 
   }
 
-  renderProxy(file, data, callback) {
+  renderProxy(file, data, callback, options) {
     if (!file) return callback('No ftl file');
-
     const htmlFile = this._randomFile();
     const tddFile = this._randomFile();
-    const configFile = this._randomFile();
+    const configFile = this._randomFile();  
     const config = {
       sourceRoot: this.sourceRoot,
       tagSyntax: this.tagSyntax,
@@ -91,6 +106,11 @@ class Freemarker {
       outputEncoding: 'UTF-8',
       data: `tdd(${tddFile})`,
     };
+    
+    if (options && options.includesFolder) {
+      this.includes.patchConfig(config, options.includesFolder)
+    }
+
     this._writeData(tddFile, data);
     this._writeConfig(configFile, config);
 

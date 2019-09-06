@@ -4,6 +4,8 @@
 
 Freemarker integration for NodeJS
 
+***This fork allows specifying a `{ includesFolder }` option as fourth argument.***
+
 ## How to use
 
   - `JAVA_HOME` should be set properly
